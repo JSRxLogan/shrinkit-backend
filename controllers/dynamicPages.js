@@ -12,8 +12,8 @@ const getGeoInfo = async (ip) => {
         return response.data.country_name; // e.g., "India"
     } catch (err) {
         console.error('Geo error:', err.message);
-        // return null;
-        return "Germany"; // Default to India if there's an error
+        return null;
+        // return "Germany"; // Default to India if there's an error
     }
 };
 
@@ -122,7 +122,7 @@ async function handleOpenShortId(req, res) {
 
         try {
 
-            country_name = await getGeoInfo(ip) || "Germany"; // Default to India if geo info is not available
+            country_name = await getGeoInfo(ip) || "India"; // Default to India if geo info is not available
 
         } catch (err) {
             console.error('Geo error: at handleOpenShortId ', err.message);
