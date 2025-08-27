@@ -1,4 +1,4 @@
-const { Url } = require("../models/Url");
+const { Url } = require("../models/url");
 const { Click } = require("../models/click");
 const { nanoid } = require("nanoid")
 const axios = require("axios");
