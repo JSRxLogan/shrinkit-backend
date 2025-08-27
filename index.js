@@ -19,10 +19,23 @@ connectMongoDb(process.env.MONGODB_URL)
 
 const app= express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://shrinkit-beta.vercel.app"
+];
+
 app.use(cors({
-  origin: "http://localhost:5173", // exact React app origin
-  credentials: true               // allow cookies/auth headers
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests like Postman
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
+
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.json());
