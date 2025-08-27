@@ -1,4 +1,4 @@
-const {User} = require('../models/user');
+const { User } = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 const { createTokenForUser, verifyToken } = require('../services/authentication');
@@ -20,7 +20,12 @@ async function handleUserSignUp(req, res) {
 
         newUser.password = undefined; // remove password from response for security
         const token = createTokenForUser(newUser);
-        res.cookie('token', token);
+        res.cookie("token", token, {
+            httpOnly: true,       // prevents JS access
+            secure: true,         // required for HTTPS (Render is HTTPS)
+            sameSite: "None",     // REQUIRED for cross-site cookies
+            path: "/",            // ensure valid for all routes
+        });
 
         res.status(201).json({ success: true, message: "User created successfully" });
     } catch (err) {
@@ -60,7 +65,12 @@ async function handleUserLogin(req, res) {
 
         user.password = undefined; // remove password from response for security
         const token = createTokenForUser(user);
-        res.cookie('token', token);
+        res.cookie("token", token, {
+            httpOnly: true,       // prevents JS access
+            secure: true,         // required for HTTPS (Render is HTTPS)
+            sameSite: "None",     // REQUIRED for cross-site cookies
+            path: "/",            // ensure valid for all routes
+        });
 
         return res.status(200).json({ success: true, message: "Login successful", user });
     }
@@ -74,7 +84,7 @@ async function verifyUserToken(req, res) {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.status(401).json({ success: false, message: "No token provided, loc->verifyUserToken" , redirectTo: "/login" });
+        return res.status(401).json({ success: false, message: "No token provided, loc->verifyUserToken", redirectTo: "/login" });
     }
 
     try {
@@ -83,16 +93,16 @@ async function verifyUserToken(req, res) {
         if (!decoded) {
             return res.status(404).json({ success: false, message: "User not found, loc->verifyUserToken", redirectTo: "/login" });
         }
-        return res.status(200).json({ success: true, user:decoded });
+        return res.status(200).json({ success: true, user: decoded });
     } catch (err) {
         return res.status(401).json({ success: false, message: "Invalid token, loc->verifyUserToken", redirectTo: "/login" });
     }
 }
 
-async function handleUserLogOut(req,res) {
-  req.user=undefined;
-  res.clearCookie('token');
-  res.status(200).json({ success: true, message: "Logout successful", redirectTo: "/login" });
+async function handleUserLogOut(req, res) {
+    req.user = undefined;
+    res.clearCookie('token');
+    res.status(200).json({ success: true, message: "Logout successful", redirectTo: "/login" });
 }
 
 module.exports = {

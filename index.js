@@ -19,14 +19,15 @@ connectMongoDb(process.env.MONGODB_URL)
 
 const app= express();
 
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
-app.use(express.json());
-app.use(useragent.express());
 app.use(cors({
   origin: "http://localhost:5173", // exact React app origin
   credentials: true               // allow cookies/auth headers
 }));
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(express.json());
+app.use(useragent.express());
+
 
 app.use("/api/auth", userRouter);
 app.use("/api", dynamicPagesRouter);
